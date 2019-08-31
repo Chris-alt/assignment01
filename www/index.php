@@ -24,7 +24,7 @@
       <tr><th>Paper code</th><th>Paper name</th></tr>
 
       <?php
-      $db_host   = '127.0.0.1';
+      $db_host   = '192.168.2.12';
       $db_name   = 'fvision';
       $db_user   = 'webuser';
       $db_passwd = 'insecure_db_pw';
