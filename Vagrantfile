@@ -48,4 +48,14 @@ Vagrant.configure("2") do |config|
       service mysql restart
     SHELL
   end
+
+  config.vm.define "thirdserver" do |thirdserver|
+    thirdserver.vm.hostname = "thirdserver"
+    thirdserver.vm.network "private_network", ip: "192.168.2.13"
+    thirdserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
+
+    thirdserver.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+    SHELL
+  end
 end
