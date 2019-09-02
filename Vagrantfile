@@ -5,25 +5,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/xenial64"
   
-  config.vm.define "thirdserver" do |thirdserver|
-    thirdserver.vm.hostname = "thirdserver"
-    thirdserver.vm.network "private_network", ip: "192.168.2.13"
-    thirdserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
-
-    thirdserver.vm.provision "shell", inline: <<-SHELL
-      apt-get update
-
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-      sudo apt-get update
-      apt-cache policy docker-ce
-      sudo apt-get install -y docker-ce
-      
-      docker pull statuec/my-container
-      docker container prune
-    SHELL
-  end
-  
   config.vm.define "webserver" do |webserver|
     webserver.vm.hostname = "webserver"
     webserver.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
@@ -67,4 +48,24 @@ Vagrant.configure("2") do |config|
       service mysql restart
     SHELL
   end
+  
+  config.vm.define "dockerserver" do |dockerserver|
+    dockerserver.vm.hostname = "dockerserver"
+    dockerserver.vm.network "private_network", ip: "192.168.2.13"
+    dockerserver.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant", mount_options: ["dmode=775,fmode=777"]
+
+    dockerserver.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      sudo apt-get update
+      apt-cache policy docker-ce
+      sudo apt-get install -y docker-ce
+      
+      docker pull statuec/my-container
+      docker run statuec/my-container
+      docker container prune
+    SHELL
+  end  
 end
